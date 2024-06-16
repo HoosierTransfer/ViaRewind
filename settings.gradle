@@ -1,10 +1,10 @@
 import java.util.function.Consumer
 
+includeBuild("build-logic")
+
 setupViaSubproject("common")
 setupViaSubproject("bukkit")
-setupViaSubproject("bungee")
 setupViaSubproject("fabric")
-setupViaSubproject("sponge")
 setupViaSubproject("velocity")
 
 setupSubproject("viarewind", project -> {
