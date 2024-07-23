@@ -19,11 +19,8 @@ package com.viaversion.viarewind.protocol.v1_9to1_8;
 
 import com.viaversion.viabackwards.api.BackwardsProtocol;
 import com.viaversion.viarewind.protocol.v1_9to1_8.data.RewindMappingData1_8;
-import com.viaversion.viarewind.protocol.v1_9to1_8.rewriter.EntityPacketRewriter1_9;
 import com.viaversion.viarewind.protocol.v1_9to1_8.rewriter.*;
 import com.viaversion.viarewind.protocol.v1_9to1_8.storage.*;
-import com.viaversion.viarewind.protocol.v1_9to1_8.task.CooldownIndicatorTask;
-import com.viaversion.viarewind.protocol.v1_9to1_8.task.LevitationUpdateTask;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.ViaProviders;
@@ -38,9 +35,11 @@ import com.viaversion.viaversion.protocols.v1_8to1_9.packet.ServerboundPackets1_
 
 import java.util.concurrent.TimeUnit;
 
-public class Protocol1_9To1_8 extends BackwardsProtocol<ClientboundPackets1_9, ClientboundPackets1_8, ServerboundPackets1_9, ServerboundPackets1_8> {
+public class Protocol1_9To1_8 extends
+		BackwardsProtocol<ClientboundPackets1_9, ClientboundPackets1_8, ServerboundPackets1_9, ServerboundPackets1_8> {
 
-	public static final ValueTransformer<Double, Integer> DOUBLE_TO_INT_TIMES_32 = new ValueTransformer<Double, Integer>(Types.INT) {
+	public static final ValueTransformer<Double, Integer> DOUBLE_TO_INT_TIMES_32 = new ValueTransformer<Double, Integer>(
+			Types.INT) {
 		@Override
 		public Integer transform(PacketWrapper wrapper, Double inputValue) {
 			return (int) (inputValue * 32.0D);
@@ -59,7 +58,8 @@ public class Protocol1_9To1_8 extends BackwardsProtocol<ClientboundPackets1_9, C
 	private final EntityPacketRewriter1_9 entityRewriter = new EntityPacketRewriter1_9(this);
 
 	public Protocol1_9To1_8() {
-		super(ClientboundPackets1_9.class, ClientboundPackets1_8.class, ServerboundPackets1_9.class, ServerboundPackets1_8.class);
+		super(ClientboundPackets1_9.class, ClientboundPackets1_8.class, ServerboundPackets1_9.class,
+				ServerboundPackets1_8.class);
 	}
 
 	@Override
@@ -76,9 +76,7 @@ public class Protocol1_9To1_8 extends BackwardsProtocol<ClientboundPackets1_9, C
 		connection.addEntityTracker(this.getClass(), new EntityTracker1_9(connection));
 
 		connection.put(new WindowTracker(connection));
-		connection.put(new LevitationStorage());
 		connection.put(new PlayerPositionTracker());
-		connection.put(new CooldownStorage());
 		connection.put(new BlockPlaceDestroyTracker());
 		connection.put(new BossBarStorage(connection));
 
@@ -89,8 +87,7 @@ public class Protocol1_9To1_8 extends BackwardsProtocol<ClientboundPackets1_9, C
 
 	@Override
 	public void register(ViaProviders providers) {
-		Via.getManager().getScheduler().scheduleRepeating(new LevitationUpdateTask(), 0L, 50L, TimeUnit.MILLISECONDS);
-		Via.getManager().getScheduler().scheduleRepeating(new CooldownIndicatorTask(), 0L, 50L, TimeUnit.MILLISECONDS);
+
 	}
 
 	@Override

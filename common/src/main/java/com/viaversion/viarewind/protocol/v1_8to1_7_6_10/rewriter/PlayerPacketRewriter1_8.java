@@ -114,6 +114,8 @@ public class PlayerPacketRewriter1_8 {
 			}
 		});
 
+		protocol.cancelClientbound(ClientboundPackets1_8.COOLDOWN);
+
 		protocol.registerClientbound(ClientboundPackets1_8.PLAYER_POSITION, new PacketHandlers() {
 			@Override
 			public void register() {

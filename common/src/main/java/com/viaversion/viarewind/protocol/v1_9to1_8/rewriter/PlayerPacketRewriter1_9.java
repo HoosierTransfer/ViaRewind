@@ -92,7 +92,7 @@ public class PlayerPacketRewriter1_9 {
 			}
 		});
 
-		protocol.cancelClientbound(ClientboundPackets1_9.COOLDOWN);
+		// protocol.cancelClientbound(ClientboundPackets1_9.COOLDOWN);
 
 		protocol.registerClientbound(ClientboundPackets1_9.CUSTOM_PAYLOAD, new PacketHandlers() {
 			@Override
@@ -185,7 +185,8 @@ public class PlayerPacketRewriter1_9 {
 					final String message = wrapper.get(Types.STRING, 0);
 					if (message.toLowerCase().trim().startsWith(ViaRewind.getConfig().getOffhandCommand())) {
 						wrapper.cancel();
-						final PacketWrapper swapItems = PacketWrapper.create(ServerboundPackets1_9.PLAYER_ACTION, wrapper.user());
+						final PacketWrapper swapItems = PacketWrapper.create(ServerboundPackets1_9.PLAYER_ACTION,
+								wrapper.user());
 						swapItems.write(Types.VAR_INT, 6);
 						swapItems.write(Types.BLOCK_POSITION1_8, new BlockPosition(0, 0, 0));
 						swapItems.write(Types.UNSIGNED_BYTE, (short) 255);
@@ -244,7 +245,8 @@ public class PlayerPacketRewriter1_9 {
 					if (pos.getConfirmId() != -1) {
 						return;
 					}
-					pos.setPos(wrapper.get(Types.DOUBLE, 0), wrapper.get(Types.DOUBLE, 1), wrapper.get(Types.DOUBLE, 2));
+					pos.setPos(wrapper.get(Types.DOUBLE, 0), wrapper.get(Types.DOUBLE, 1),
+							wrapper.get(Types.DOUBLE, 2));
 					pos.setOnGround(wrapper.get(Types.BOOLEAN, 0));
 				});
 				handler(wrapper -> wrapper.user().get(BossBarStorage.class).updateLocation());
@@ -261,7 +263,8 @@ public class PlayerPacketRewriter1_9 {
 					wrapper.user().get(PlayerPositionTracker.class).sendAnimations();
 
 					PlayerPositionTracker pos = wrapper.user().get(PlayerPositionTracker.class);
-					if (pos.getConfirmId() != -1) return;
+					if (pos.getConfirmId() != -1)
+						return;
 					pos.setYaw(wrapper.get(Types.FLOAT, 0));
 					pos.setPitch(wrapper.get(Types.FLOAT, 1));
 					pos.setOnGround(wrapper.get(Types.BOOLEAN, 0));
@@ -281,8 +284,10 @@ public class PlayerPacketRewriter1_9 {
 			PlayerPositionTracker storage = wrapper.user().get(PlayerPositionTracker.class);
 			storage.sendAnimations();
 			if (storage.getConfirmId() != -1) {
-				if (storage.getPosX() == x && storage.getPosY() == y && storage.getPosZ() == z && storage.getYaw() == yaw && storage.getPitch() == pitch) {
-					final PacketWrapper confirmTeleport = PacketWrapper.create(ServerboundPackets1_9.ACCEPT_TELEPORTATION, wrapper.user());
+				if (storage.getPosX() == x && storage.getPosY() == y && storage.getPosZ() == z
+						&& storage.getYaw() == yaw && storage.getPitch() == pitch) {
+					final PacketWrapper confirmTeleport = PacketWrapper
+							.create(ServerboundPackets1_9.ACCEPT_TELEPORTATION, wrapper.user());
 					confirmTeleport.write(Types.VAR_INT, storage.getConfirmId());
 					confirmTeleport.sendToServer(Protocol1_9To1_8.class);
 
@@ -305,14 +310,14 @@ public class PlayerPacketRewriter1_9 {
 				tracker.setMining();
 			}
 
-			final CooldownStorage cooldown = wrapper.user().get(CooldownStorage.class);
-			if (status == 1) { // Cancel
-				tracker.setLastMining(0);
-				cooldown.hit();
-			} else if (status == 2) { // Finish
-				tracker.setLastMining(System.currentTimeMillis() + 100);
-				cooldown.setLastHit(0);
-			}
+			// final CooldownStorage cooldown = wrapper.user().get(CooldownStorage.class);
+			// if (status == 1) { // Cancel
+			// tracker.setLastMining(0);
+			// cooldown.hit();
+			// } else if (status == 2) { // Finish
+			// tracker.setLastMining(System.currentTimeMillis() + 100);
+			// cooldown.setLastHit(0);
+			// }
 		});
 
 		protocol.registerServerbound(ServerboundPackets1_8.USE_ITEM_ON, new PacketHandlers() {
@@ -328,7 +333,8 @@ public class PlayerPacketRewriter1_9 {
 				handler(wrapper -> {
 					if (wrapper.get(Types.VAR_INT, 0) == -1) {
 						wrapper.cancel();
-						final PacketWrapper useItem = PacketWrapper.create(ServerboundPackets1_9.USE_ITEM, wrapper.user());
+						final PacketWrapper useItem = PacketWrapper.create(ServerboundPackets1_9.USE_ITEM,
+								wrapper.user());
 						useItem.write(Types.VAR_INT, 0);
 						useItem.sendToServer(Protocol1_9To1_8.class);
 					}
@@ -336,7 +342,8 @@ public class PlayerPacketRewriter1_9 {
 			}
 		});
 
-		protocol.registerServerbound(ServerboundPackets1_8.SET_CARRIED_ITEM, wrapper -> wrapper.user().get(CooldownStorage.class).hit());
+		// protocol.registerServerbound(ServerboundPackets1_8.SET_CARRIED_ITEM,
+		// wrapper -> wrapper.user().get(CooldownStorage.class).hit());
 
 		// Queue swing packet to be sent after on ground idle packets
 		protocol.registerServerbound(ServerboundPackets1_8.SWING, wrapper -> {
@@ -347,7 +354,7 @@ public class PlayerPacketRewriter1_9 {
 			wrapper.user().get(PlayerPositionTracker.class).queueAnimation(swing);
 
 			wrapper.user().get(BlockPlaceDestroyTracker.class).updateMining();
-			wrapper.user().get(CooldownStorage.class).hit();
+			// wrapper.user().get(CooldownStorage.class).hit();
 		});
 
 		protocol.registerServerbound(ServerboundPackets1_8.PLAYER_COMMAND, new PacketHandlers() {
@@ -362,7 +369,8 @@ public class PlayerPacketRewriter1_9 {
 					if (action == 6) { // Jump with horse
 						wrapper.set(Types.VAR_INT, 1, 7);
 					} else if (action == 0 && !tracker.isOnGround()) { // Start sneaking
-						final PacketWrapper elytra = PacketWrapper.create(ServerboundPackets1_9.PLAYER_COMMAND, wrapper.user());
+						final PacketWrapper elytra = PacketWrapper.create(ServerboundPackets1_9.PLAYER_COMMAND,
+								wrapper.user());
 						elytra.write(Types.VAR_INT, wrapper.get(Types.VAR_INT, 0));
 						elytra.write(Types.VAR_INT, 8);
 						elytra.write(Types.VAR_INT, 0);
@@ -380,7 +388,8 @@ public class PlayerPacketRewriter1_9 {
 			final int vehicle = tracker.getVehicle(tracker.clientEntityId());
 
 			if (vehicle != -1 && tracker.entityType(vehicle) == EntityTypes1_9.EntityType.BOAT) {
-				final PacketWrapper paddleBoat = PacketWrapper.create(ServerboundPackets1_9.PADDLE_BOAT, wrapper.user());
+				final PacketWrapper paddleBoat = PacketWrapper.create(ServerboundPackets1_9.PADDLE_BOAT,
+						wrapper.user());
 				paddleBoat.write(Types.BOOLEAN, forward != 0.0f || sideways < 0.0f);
 				paddleBoat.write(Types.BOOLEAN, forward != 0.0f || sideways > 0.0f);
 				paddleBoat.scheduleSendToServer(Protocol1_9To1_8.class);
@@ -393,7 +402,8 @@ public class PlayerPacketRewriter1_9 {
 				map(Types.BLOCK_POSITION1_8); // Position
 				handler(wrapper -> {
 					for (int i = 0; i < 4; i++) {
-						wrapper.write(Types.STRING, ChatUtil.jsonToLegacy(wrapper.user(), wrapper.read(Types.COMPONENT)));
+						wrapper.write(Types.STRING,
+								ChatUtil.jsonToLegacy(wrapper.user(), wrapper.read(Types.COMPONENT)));
 					}
 				});
 			}
@@ -420,8 +430,10 @@ public class PlayerPacketRewriter1_9 {
 				handler(wrapper -> {
 					final short flags = wrapper.get(Types.UNSIGNED_BYTE, 0);
 
-					final PacketWrapper updateSkin = PacketWrapper.create(ClientboundPackets1_8.SET_ENTITY_DATA, wrapper.user());
-					updateSkin.write(Types.VAR_INT, wrapper.user().getEntityTracker(Protocol1_9To1_8.class).clientEntityId());
+					final PacketWrapper updateSkin = PacketWrapper.create(ClientboundPackets1_8.SET_ENTITY_DATA,
+							wrapper.user());
+					updateSkin.write(Types.VAR_INT,
+							wrapper.user().getEntityTracker(Protocol1_9To1_8.class).clientEntityId());
 
 					final List<EntityData> entityData = new ArrayList<>();
 					entityData.add(new EntityData(10, EntityDataTypes1_8.BYTE, (byte) flags));
